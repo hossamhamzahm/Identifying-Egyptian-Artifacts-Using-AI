@@ -5,7 +5,18 @@ import torch.optim as optim #optimizers (e.g. Gradient Descent Stochastic Gradie
 import torch.nn.functional as F # contains activation functions
 from torch.utils.data import DataLoader # to load data set
 import torchvision.datasets as datasets # to download dataset form mnisc
-import torchvision.transforms as transforms 
+import torchvision.transforms as transforms
+from torchvision.datasets import ImageFolder
+
+
+
+# Example transformations
+transform = transforms.Compose([
+    transforms.Resize((450, 450)),  # Resize the image to (450, 450)
+    transforms.ToTensor(),          # Convert the PIL image to a PyTorch tensor (0-1)
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),  # Normalize the image
+])
+
 
 
 #create fully connected network
@@ -26,21 +37,24 @@ device = "cpu" #torch.device("cuda" if torch.cuda_is_available() else "cpu")
 
 
 #hyperparameters
-input_size = 784 # n. of input features
-num_classes = 10 # n. of output classes
+input_size = 607500 # n. of input features
+num_classes = 5 # n. of output classes
 learning_rate = 0.001
 #depicts the number of samples that propagate through 
 #the neural network before updating the model parameters.
 #the nn parameters are updated after each batch processed
 batch_size = 64 
 num_epoches = 1 # how many times the entire dataset is fed to the network
+traing_image_path = "/mnt/c/Users/hosam/Desktop/grad/datasets/monuments/train"
 
 
 #load data
-train_dataset = datasets.MNIST(root="dataset/", train=True, transform=transforms.ToTensor(), download=True)
-train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True, )
-test_dataset = datasets.MNIST(root="dataset/", train=False, transform=transforms.ToTensor(), download=True)
-test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True, )
+# train_dataset = datasets.MNIST(root="dataset/", train=True, transform=transforms.ToTensor(), download=True)
+train_dataset = ImageFolder(root=traing_image_path, transform=transform)
+train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
+
+# test_dataset = datasets.MNIST(root="dataset/", train=False, transform=transforms.ToTensor(), download=True)
+# test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True, )
 
 
 
@@ -105,4 +119,4 @@ def chech_accuracy(loader, model):
 
 
 chech_accuracy(train_loader, model)
-chech_accuracy(test_loader, model)
+# chech_accuracy(test_loader, model)
